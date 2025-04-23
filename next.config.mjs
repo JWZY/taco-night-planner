@@ -9,6 +9,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  output: 'export',
+  basePath: '/taco-night-planner',
+  assetPrefix: '/taco-night-planner/',
 }
 
 export default nextConfig
