@@ -10,8 +10,10 @@ const nextConfig = {
     unoptimized: true,
   },
   output: 'export',
-  basePath: '/taco-night-planner',
-  assetPrefix: '/taco-night-planner/',
+  ...(process.env.NODE_ENV === 'production' ? {
+    basePath: '/taco-night-planner',
+    assetPrefix: '/taco-night-planner/',
+  } : {}),
 }
 
 export default nextConfig
