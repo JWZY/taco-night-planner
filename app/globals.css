@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-fredoka: "Fredoka", sans-serif;
+}
+
+body {
+  font-family: var(--font-fredoka);
+  background-color: #ffcc80; /* Light orange background */
+  overflow-x: hidden;
+}
+
+.game-text {
+  color: white;
+  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 3px 5px rgba(0, 0, 0, 0.5);
+}
+
+.game-button {
+  transition: all 0.1s;
+}
+
+.game-button:active {
+  transform: scale(0.95);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #92400e;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #b45309;
+}
