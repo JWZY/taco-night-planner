@@ -878,7 +878,7 @@ export default function Home() {
 
       {/* Version Number */}
       <div className="absolute bottom-2 right-4 text-xs text-gray-500 opacity-50">
-        v1
+        v1.01
       </div>
     </main>
   )
