@@ -192,9 +192,8 @@ export default function Home() {
         console.log("Audio playing automatically.");
       }).catch(error => {
         console.error("Audio autoplay failed:", error);
-        // Show a notification or UI feedback if autoplay fails
-        // Note: User interaction might be needed to start audio
-        showNotification("Click the unmute button to start audio.", "info");
+        // Autoplay failed, likely requires user interaction.
+        // Do not show a notification here anymore.
       });
 
       // Cleanup function
@@ -575,7 +574,7 @@ export default function Home() {
                   type="text"
                   value={newIngredient}
                   onChange={(e) => setNewIngredient(e.target.value)}
-                  placeholder="New ingredient..."
+                  placeholder="Add a new ingredient..."
                   className="flex-1 p-3 rounded-xl bg-gradient-to-b from-stone-300 to-stone-50 border-yellow-600 border-2 border-yellow-600 text-stone-900 placeholder-stone-900/50 font-semibold"
                 />
                 <input
@@ -662,8 +661,8 @@ export default function Home() {
                           )}
                         </div>
 
-                        <span className="game-text font-medium">{ingredient.name}</span>
-                        <span className="text-stone-700 font-semibold text-sm">({ingredient.quantity})</span>
+                        <span className="font-medium text-amber-950">{ingredient.name}</span>
+                        <span className="text-amber-800 font-medium text-sm">({ingredient.quantity})</span>
                       </div>
 
                       <div className="flex items-center gap-2">
@@ -768,7 +767,7 @@ export default function Home() {
             <div className="bg-gradient-to-b from-amber-800 to-amber-900 rounded-3xl p-6 border-4 border-yellow-600 shadow-xl h-full">
               <h2 className="game-text text-inset-shadow text-3xl mb-6 font-semibold text-center">Players</h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto overflow-x-visible pr-2 custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[100vh] overflow-y-auto overflow-x-visible pr-2 custom-scrollbar">
                 {players.map((player) => (
                   <div
                     key={player.id}
@@ -784,7 +783,7 @@ export default function Home() {
                           type="text"
                           value={editPlayerName}
                           onChange={(e) => setEditPlayerName(e.target.value)}
-                          className="flex-1 p-2 rounded-lg bg-amber-950/50 border-2 border-amber-600"
+                          className="flex-1 p-2 rounded-lg bg-gradient-to-b from-stone-300 to-stone-50 font-medium text-stone-900"
                           autoFocus
                           onBlur={() => savePlayerName(player.id)}
                           onKeyDown={(e) => e.key === "Enter" && savePlayerName(player.id)}
@@ -819,7 +818,7 @@ export default function Home() {
                           <h3 className="game-text text-xl font-medium">{player.name}</h3>
                         </div>
 
-                        <div className="px-3 py-1 rounded-full text-sm text-amber-300">
+                        <div className="px-3 py-1 rounded-full text-sm text-stone-50/90">
                           {getPlayerItemsCount(player.id)} items
                         </div>
                       </div>
@@ -855,16 +854,18 @@ export default function Home() {
                         .map((i) => (
                           <div
                             key={i.id}
-                            className="bg-amber-950/40 rounded-lg px-3 py-2 text-sm flex items-center gap-2"
+                            className="bg-gradient-to-b from-amber-100 to-amber-300 rounded-xl px-3 py-2 text-sm flex gap-2"
                           >
-                            <div className="flex-shrink-0">{renderIngredientIcon(i)}</div>
-                            <span>{i.name}</span>
-                            <span className="text-amber-300">({i.quantity})</span>
+                            <div className="flex-shrink-0 mt-1">{renderIngredientIcon(i)}</div>
+                            <div className="flex flex-col">
+                              <span className="font-medium text-amber-950">{i.name}</span>
+                              <span className="font-medium text-xs text-amber-800">({i.quantity})</span>
+                            </div>
                           </div>
                         ))}
 
                       {getPlayerItemsCount(player.id) === 0 && (
-                        <div className="text-center py-2 text-amber-300/80 text-sm">Dirty freeloader</div>
+                        <div className="text-center py-2 text-stone-50/90 text-sm">Dirty freeloader</div>
                       )}
                     </div>
                   </div>
@@ -873,6 +874,11 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
+      </div>
+
+      {/* Version Number */}
+      <div className="absolute bottom-2 right-4 text-xs text-gray-500 opacity-50">
+        v1
       </div>
     </main>
   )
