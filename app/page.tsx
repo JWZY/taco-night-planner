@@ -234,7 +234,6 @@ export default function Home() {
         assigned: "",
         quantity: newQuantity || "1",
         icon: "",
-        customIcon: "",
       },
     ])
     setNewIngredient("")
@@ -299,16 +298,6 @@ export default function Home() {
     return <Smile className="h-5 w-5 inline-block" />
   }
 
-  // Reset all data to defaults
-  const resetToDefaults = () => {
-    if (window.confirm("Are you sure you want to reset all data? This will clear all your changes.")) {
-      setIngredients(defaultIngredients)
-      setPlayers(defaultPlayers)
-      localStorage.removeItem('taco-night-ingredients')
-      localStorage.removeItem('taco-night-players')
-    }
-  }
-  
   // Generate a sharable URL with current data
   const shareCurrentSetup = async () => {
     try {
@@ -395,11 +384,19 @@ export default function Home() {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Element;
-      if (!target.closest('.dropdown-wrapper')) {
-        setOpenIconDropdown(null);
-        setOpenDropdown(null);
-        setOpenPlayerIconDropdown(null);
+      
+      // Check if clicking inside any dropdown menu or trigger button
+      const isDropdownContent = target.closest('.absolute') || // Dropdown menu
+                               target.closest('.game-button'); // Dropdown trigger buttons
+      
+      if (isDropdownContent) {
+        return;
       }
+      
+      // Only close dropdowns when clicking outside
+      setOpenIconDropdown(null);
+      setOpenDropdown(null);
+      setOpenPlayerIconDropdown(null);
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -432,22 +429,14 @@ export default function Home() {
 
       {/* Header - removed background fill */}
       <header className="relative py-6 px-4 text-center">
-        <div className="relative z-10 mx-auto max-w-4xl">
-          <h1 className="game-text text-inset-shadow text-4xl md:text-6xl font-bold mb-2">Taco Night Planner</h1>
-          <div className="flex gap-2 justify-center">
-            <button 
-              onClick={resetToDefaults}
-              className="mt-2 px-3 py-1 text-sm rounded-lg text-amber-900 bg-amber-200 hover:bg-amber-300 transition-colors"
-            >
-              Reset to Defaults
-            </button>
-            <button 
-              onClick={shareCurrentSetup}
-              className="mt-2 px-3 py-1 text-sm rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition-colors"
-            >
-              Share This Setup
-            </button>
-          </div>
+        <div className="relative z-10 mx-auto max-w-4xl flex items-center justify-center gap-4">
+          <h1 className="game-text text-inset-shadow text-4xl md:text-6xl font-bold">Taco Night Planner</h1>
+          <button 
+            onClick={shareCurrentSetup}
+            className="px-3 py-1 text-sm rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition-colors"
+          >
+            Share This Setup
+          </button>
         </div>
       </header>
 
@@ -486,7 +475,7 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="space-y-3 max-h-[60vh] overflow-visible pr-2 custom-scrollbar">
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto overflow-x-visible pr-2 custom-scrollbar">
               {ingredients.map((ingredient) => (
                 <div
                   key={ingredient.id}
@@ -648,7 +637,7 @@ export default function Home() {
           <div className="bg-gradient-to-b from-amber-800 to-amber-900 rounded-3xl p-6 border-4 border-yellow-600 shadow-xl">
             <h2 className="game-text text-inset-shadow text-3xl mb-6 font-semibold text-center">Players</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-visible pr-2 custom-scrollbar">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto overflow-x-visible pr-2 custom-scrollbar">
               {players.map((player) => (
                 <div
                   key={player.id}
