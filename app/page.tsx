@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { ChevronDown, ChevronUp, Plus, Trash2, Smile } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { ChevronDown, ChevronUp, Plus, Trash2, Smile, Play, Pause, AlertTriangle, Volume2, VolumeX } from "lucide-react"
 import { TacoBackground } from "@/components/taco-background"
 import { LuCopy, LuShare2, LuCheck, LuPlus, LuTrash2, LuUser, LuSave, LuX } from 'react-icons/lu';
 import { FaTrashAlt } from 'react-icons/fa';
@@ -46,16 +46,24 @@ const playerIcons = [
 
 // Default taco ingredients
 const defaultIngredients = [
-  { id: 1, name: "Tortillas", assigned: "", quantity: "12 pack", icon: "🌮"},
-  { id: 2, name: "Ground Beef", assigned: "", quantity: "2 lbs", icon: "🥩"},
-  { id: 3, name: "Shredded Cheese", assigned: "", quantity: "1 bag", icon: "🧀"},
-  { id: 4, name: "Lettuce", assigned: "", quantity: "1 head", icon: "🥬"},
-  { id: 5, name: "Tomatoes", assigned: "", quantity: "4", icon: "🍅"},
-  { id: 6, name: "Sour Cream", assigned: "", quantity: "1 tub", icon: ""},
-  { id: 7, name: "Salsa", assigned: "", quantity: "1 jar", icon: "🌶️"},
-  { id: 8, name: "Guacamole", assigned: "", quantity: "2 avocados", icon: "🥑"},
-  { id: 9, name: "Onions", assigned: "", quantity: "2", icon: "🧅"},
-  { id: 10, name: "Cilantro", assigned: "", quantity: "1 bunch", icon: "🌱"},
+  // Toppings
+  { id: 1, name: "Lettuce", assigned: "", quantity: "½-¾ iceberg, shredded", icon: "🥬" },
+  { id: 2, name: "Red onions", assigned: "", quantity: "1 large, diced small", icon: "🧅" },
+  { id: 3, name: "Salsa Verde", assigned: "", quantity: "1 medium jar (16oz)", icon: "🌶️" }, // Using chili for salsa
+  { id: 4, name: "Shredded cheese", assigned: "", quantity: "16oz bag", icon: "🧀" },
+  { id: 5, name: "Cilantro", assigned: "", quantity: "1 bunch, chopped", icon: "🌱" },
+  { id: 6, name: "Limes", assigned: "", quantity: "3", icon: "🍋" },
+  { id: 7, name: "Tomato salsa", assigned: "", quantity: "16oz jar", icon: "🍅" },
+  { id: 8, name: "Ranchero Sauce", assigned: "", quantity: "1 medium jar/can", icon: "🥫" }, // Using can emoji
+
+  // Shells
+  { id: 9, name: "Soft wheat tortillas", assigned: "", quantity: "24 count package", icon: "🌯" }, // Using burrito for soft tortilla
+  { id: 10, name: "Hard shell tortillas", assigned: "", quantity: "18 count box", icon: "🌮" },
+
+  // Proteins
+  { id: 11, name: "Ground beef", assigned: "", quantity: "2 lbs", icon: "🥩" },
+  { id: 12, name: "Chicken thighs", assigned: "", quantity: "2.5 lbs", icon: "🍗" },
+  { id: 13, name: "Chipotle style sofritas", assigned: "", quantity: "24oz", icon: "🍲" }, // Using pot of food for sofritas
 ]
 
 // Default players
@@ -151,6 +159,38 @@ export default function Home() {
   const [ingredients, setIngredients] = useState<typeof defaultIngredients>(defaultIngredients)
   const [players, setPlayers] = useState<typeof defaultPlayers>(defaultPlayers)
   
+  // Audio state and ref
+  const [isMuted, setIsMuted] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize Audio object on mount and attempt to play
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      audioRef.current = new Audio("/audio/White People Taco Night FULL SONG and Video - Lewberger.mp3");
+      audioRef.current.loop = true;
+      audioRef.current.muted = true;
+      
+      // Attempt to play - might be blocked by autoplay policies
+      audioRef.current.play().then(() => {
+        // Play started successfully
+        console.log("Audio playing automatically.");
+      }).catch(error => {
+        console.error("Audio autoplay failed:", error);
+        // Show a notification or UI feedback if autoplay fails
+        // Note: User interaction might be needed to start audio
+        showNotification("Click the unmute button to start audio.", "info");
+      });
+
+      // Cleanup function
+      return () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current = null;
+        }
+      };
+    }
+  }, []);
+
   // Load local storage data after component mounts on client
   useEffect(() => {
     try {
@@ -195,6 +235,9 @@ export default function Home() {
   const [openPlayerIconDropdown, setOpenPlayerIconDropdown] = useState<number | null>(null)
   const [editingPlayer, setEditingPlayer] = useState<number | null>(null)
   const [editPlayerName, setEditPlayerName] = useState("")
+  
+  // Chaos Mode state
+  const [isChaosMode, setIsChaosMode] = useState(false);
   
   // Notification system
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null)
@@ -296,6 +339,38 @@ export default function Home() {
       return <span className="text-xl">{ingredient.icon}</span>
     }
     return <Smile className="h-5 w-5 inline-block" />
+  }
+
+  // Toggle Mute/Unmute
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+
+    const newMutedState = !isMuted;
+    audioRef.current.muted = newMutedState;
+    setIsMuted(newMutedState);
+    
+    // If unmuting and audio isn't playing yet (due to autoplay fail), try playing now
+    if (!newMutedState && audioRef.current.paused) {
+       audioRef.current.play().catch(error => {
+         console.error("Audio play failed on unmute:", error);
+         showNotification("Audio playback failed.", "error");
+       });
+    }
+  };
+
+  // Placeholder for CHAOS button functionality
+  const handleChaosClick = () => {
+    setIsChaosMode(prev => !prev);
+    showNotification(isChaosMode ? "Chaos mode deactivated." : "CHAOS MODE ACTIVATED!", "info");
+  };
+
+  // Reset state to default values
+  const resetToDefaults = () => {
+    if (window.confirm("Are you sure you want to reset all ingredients and players to their defaults? This cannot be undone.")) {
+      setIngredients(defaultIngredients);
+      setPlayers(defaultPlayers);
+      showNotification("Reset to default ingredients and players.", "info");
+    }
   }
 
   // Generate a sharable URL with current data
@@ -404,7 +479,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen relative">
-      <TacoBackground />
+      <TacoBackground isChaosMode={isChaosMode} />
 
       {/* Notification component */}
       {notification && (
@@ -427,10 +502,39 @@ export default function Home() {
         </div>
       )}
 
-      {/* Header - removed background fill */}
-      <header className="relative py-6 px-4 text-center">
-        <div className="relative z-10 mx-auto max-w-4xl flex items-center justify-center gap-4">
-          <h1 className="game-text text-inset-shadow text-4xl md:text-6xl font-bold">Taco Night Planner</h1>
+      {/* Header - Title centered, buttons page-right */}
+      <header className="relative py-6 px-4">
+        {/* Buttons absolutely positioned top-left of the header */}
+        <div className="absolute top-6 left-4 z-10 flex items-center gap-2">
+          <button
+            onClick={toggleMute}
+            className={`p-2 rounded-full text-white transition-colors ${isMuted ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
+            title={isMuted ? "Unmute Music" : "Mute Music"}
+          >
+            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          </button>
+          <button
+            onClick={handleChaosClick}
+            className="px-3 py-1 text-sm rounded-lg text-white bg-orange-500 hover:bg-orange-600 transition-colors flex items-center gap-1"
+            title="Activate CHAOS MODE"
+          >
+            <AlertTriangle size={16} /> CHAOS
+          </button>
+        </div>
+
+        {/* Title centered within max-width container */}
+        <div className="mx-auto max-w-4xl text-center">
+          <h1 className="game-text text-inset-shadow heavy-text-shadow text-4xl md:text-6xl font-bold">Taco Night Planner</h1>
+        </div>
+        {/* Buttons absolutely positioned top-right of the header */}
+        <div className="absolute top-6 right-4 z-10 flex items-center gap-2">
+          <button 
+            onClick={resetToDefaults}
+            className="px-3 py-1 text-sm rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors"
+            title="Reset all ingredients and players to the default list"
+          >
+            Reset Defaults
+          </button>
           <button 
             onClick={shareCurrentSetup}
             className="px-3 py-1 text-sm rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition-colors"
@@ -504,12 +608,12 @@ export default function Home() {
 
                         {/* Emoji icon dropdown menu */}
                         {openIconDropdown === ingredient.id && (
-                          <div className="absolute z-50 mt-2 w-64 left-0 bg-amber-950 rounded-xl border-2 border-yellow-600 shadow-xl">
+                          <div className="absolute z-50 mt-2 w-64 left-0 bg-gradient-to-b from-amber-50 to-amber-100 rounded-xl border-2 border-yellow-600 shadow-xl">
                             <div className="p-2">
                               <div className="flex justify-between items-center mb-2 border-b border-amber-700 pb-2">
                                 <button
                                   onClick={() => setOpenIconDropdown(null)}
-                                  className="text-sm text-amber-300 hover:text-amber-100"
+                                  className="text-md text-amber-950 hover:text-amber-100"
                                 >
                                   Close
                                 </button>
@@ -696,7 +800,7 @@ export default function Home() {
 
                   {/* Player icon dropdown */}
                   {openPlayerIconDropdown === player.id && (
-                    <div className="absolute z-50 mt-2 w-64 left-0 bg-amber-950 rounded-xl border-2 border-yellow-600 shadow-xl">
+                    <div className="absolute z-50 mt-2 w-64 left-0 bg-gradient-to-b from-amber-50 to-amber-100 rounded-xl border-2 border-yellow-600 shadow-xl">
                       <div className="p-2 grid grid-cols-5 gap-2">
                         <button
                           onClick={() => setPlayerIcon(player.id, "")}
