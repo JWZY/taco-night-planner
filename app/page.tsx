@@ -208,18 +208,25 @@ export default function Home() {
                 value={newIngredient}
                 onChange={(e) => setNewIngredient(e.target.value)}
                 placeholder="New ingredient..."
-                className="flex-1 p-3 rounded-xl bg-gradient-to-b from-stone-400 to-stone-50 border-yellow-600 border-2 border-yellow-600 text-black placeholder-stone-800/50 font-semibold"
+                className="flex-1 p-3 rounded-xl bg-gradient-to-b from-stone-300 to-stone-50 border-yellow-600 border-2 border-yellow-600 text-stone-900 placeholder-stone-900/50 font-semibold"
               />
               <input
                 type="text"
                 value={newQuantity}
                 onChange={(e) => setNewQuantity(e.target.value)}
                 placeholder="Qty & unit"
-                className="w-24 p-3 rounded-xl bg-amber-950/50 border-2 border-yellow-600 text-white placeholder-amber-300/70"
+                className="w-28 p-3 rounded-xl bg-gradient-to-b from-stone-300 to-stone-50 border-yellow-600 border-2 border-yellow-600 text-stone-900 placeholder-stone-900/50 font-semibold"
               />
               <button
                 onClick={addIngredient}
-                className="game-button bg-green-600 hover:bg-green-500 p-3 rounded-xl border-2 border-green-400"
+                className="game-button bg-green-600 hover:bg-green-500 p-3 rounded-xl border-2 border-green-600 text-green-900"
+                style={{
+                  background: `radial-gradient(circle at 35% 25%, #00C950, #00C950)`,
+                  borderRadius: '12px',
+                  boxShadow: `
+                    inset 0 -3px 5px rgba(0, 0, 0, 0.3)
+                  `
+                }}
               >
                 <Plus className="h-6 w-6" />
               </button>
@@ -351,7 +358,7 @@ export default function Home() {
                       {/* Dropdown button */}
                       <button
                         onClick={() => setOpenDropdown(openDropdown === ingredient.id ? null : ingredient.id)}
-                        className="game-button badge-icon-button rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        className="game-button badge-icon-button text-amber-900 rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                         style={{
                           background: `radial-gradient(circle at 35% 25%, #FFC53D, #E6A700)`,
                           borderRadius: '12px',
@@ -371,7 +378,7 @@ export default function Home() {
                       {/* Delete button */}
                       <button
                         onClick={() => removeIngredient(ingredient.id)}
-                        className="game-button badge-icon-button rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        className="game-button text-white badge-icon-button rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                         style={{
                           background: `radial-gradient(circle at 35% 25%, #FF5252, #D32F2F)`,
                           borderRadius: '12px',
