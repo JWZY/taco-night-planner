@@ -69,12 +69,12 @@ const defaultIngredients = [
 
 // Default players
 const defaultPlayers = [
-  { id: 1, name: "Hulda", color: "#FF5252", icon: "👨‍🍳" },
-  { id: 2, name: "James", color: "#4CAF50", icon: "👩‍🍳" },
-  { id: 3, name: "Javan", color: "#2196F3", icon: "🧑‍🍳" },
-  { id: 4, name: "Kevin", color: "#FFC107", icon: "😎" },
-  { id: 5, name: "Khrys", color: "#9C27B0", icon: "🤠" },
-  { id: 6, name: "Sue", color: "#FF9800", icon: "🦸" },
+  { id: 1, name: "Mario", color: "#FF5252", icon: "👨🏻" },
+  { id: 2, name: "Peach", color: "#4CAF50", icon: "👩‍🍳" },
+  { id: 3, name: "Luigi", color: "#2196F3", icon: "🫃" },
+  { id: 4, name: "Toad", color: "#FFC107", icon: "🍄" },
+  { id: 5, name: "Yoshi", color: "#9C27B0", icon: "🦖" },
+  { id: 6, name: "Boo", color: "#FF9800", icon: "👻" },
 ]
 
 // SIMPLIFIED: Encode state to URL-safe base64
@@ -539,7 +539,7 @@ export default function Home() {
 
         {/* Title centered within max-width container */}
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className="game-text text-inset-shadow heavy-text-shadow text-4xl md:text-6xl font-bold">Taco Night Planner</h1>
+          <h1 className="game-text text-inset-shadow heavy-text-shadow text-4xl md:text-6xl font-bold">White People Taco Night Planner</h1>
         </div>
         {/* Buttons absolutely positioned top-right of the header */}
         <div className="absolute top-6 right-4 z-10 flex items-center gap-2">
