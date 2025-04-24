@@ -71,12 +71,12 @@ const defaultIngredients = [
 
 // Default players
 const defaultPlayers = [
-  { id: 1, name: "Player 1", color: "#FF5252", icon: "👨‍🍳" },
-  { id: 2, name: "Player 2", color: "#4CAF50", icon: "👩‍🍳" },
-  { id: 3, name: "Player 3", color: "#2196F3", icon: "🧑‍🍳" },
-  { id: 4, name: "Player 4", color: "#FFC107", icon: "😎" },
-  { id: 5, name: "Player 5", color: "#9C27B0", icon: "🤠" },
-  { id: 6, name: "Player 6", color: "#FF9800", icon: "🦸" },
+  { id: 1, name: "Hulda", color: "#FF5252", icon: "👨‍🍳" },
+  { id: 2, name: "James", color: "#4CAF50", icon: "👩‍🍳" },
+  { id: 3, name: "Javan", color: "#2196F3", icon: "🧑‍🍳" },
+  { id: 4, name: "Kevin", color: "#FFC107", icon: "😎" },
+  { id: 5, name: "Khrys", color: "#9C27B0", icon: "🤠" },
+  { id: 6, name: "Sue", color: "#FF9800", icon: "🦸" },
 ]
 
 export default function Home() {
@@ -193,29 +193,28 @@ export default function Home() {
       {/* Header - removed background fill */}
       <header className="relative py-6 px-4 text-center">
         <div className="relative z-10 mx-auto max-w-4xl">
-          <h1 className="game-text text-4xl md:text-6xl font-bold mb-2">Taco Night Planner</h1>
+          <h1 className="game-text text-inset-shadow text-4xl md:text-6xl font-bold mb-2">Taco Night Planner</h1>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-2">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Ingredients Section */}
           <div className="bg-gradient-to-b from-amber-800 to-amber-900 rounded-3xl p-6 border-4 border-yellow-600 shadow-xl">
-            <h2 className="game-text text-3xl mb-6 text-center font-bold">Ingredients</h2>
-
+            <h2 className="game-text text-inset-shadow text-3xl mb-6 text-center font-semibold">Ingredients</h2>
             <div className="mb-6 flex gap-2">
               <input
                 type="text"
                 value={newIngredient}
                 onChange={(e) => setNewIngredient(e.target.value)}
                 placeholder="New ingredient..."
-                className="flex-1 p-3 rounded-xl bg-amber-950/50 border-2 border-yellow-600 text-white placeholder-amber-300/70"
+                className="flex-1 p-3 rounded-xl bg-gradient-to-b from-stone-400 to-stone-50 border-yellow-600 border-2 border-yellow-600 text-black placeholder-stone-800/50 font-semibold"
               />
               <input
                 type="text"
                 value={newQuantity}
                 onChange={(e) => setNewQuantity(e.target.value)}
-                placeholder="Qty"
+                placeholder="Qty & unit"
                 className="w-24 p-3 rounded-xl bg-amber-950/50 border-2 border-yellow-600 text-white placeholder-amber-300/70"
               />
               <button
@@ -226,11 +225,11 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
               {ingredients.map((ingredient) => (
                 <div
                   key={ingredient.id}
-                  className="relative bg-amber-950/60 rounded-xl p-4 border-2 border-yellow-600 shadow-md"
+                  className="relative bg-gradient-to-b from-amber-100 to-amber-300 rounded-xl p-4 border-2 border-yellow-600 shadow-md group"
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -241,7 +240,15 @@ export default function Home() {
                             setOpenIconDropdown(openIconDropdown === ingredient.id ? null : ingredient.id)
                             setOpenCustomIconDropdown(null)
                           }}
-                          className="game-button bg-amber-600 hover:bg-amber-500 p-2 rounded-lg border-2 border-amber-400 min-w-[40px] text-center flex items-center justify-center"
+                          className="game-button badge-icon-button rounded-lg text-center text-xl relative p-3 w-[32px] h-[32px] flex items-center justify-center bg-amber-300"
+                          style={{
+                            background: `white`,
+                            borderRadius: '12px 12px 12px 12px',
+                            boxShadow: `
+                              0 0 0 2px #8B4513,
+                              inset 0 -3px 5px rgba(0, 0, 0, 0.3)
+                            `
+                          }}
                         >
                           {renderIngredientIcon(ingredient)}
                         </button>
@@ -322,7 +329,7 @@ export default function Home() {
                       </div>
 
                       <span className="game-text font-medium">{ingredient.name}</span>
-                      <span className="text-amber-300 text-sm">({ingredient.quantity})</span>
+                      <span className="text-stone-700 font-semibold text-sm">({ingredient.quantity})</span>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -344,7 +351,15 @@ export default function Home() {
                       {/* Dropdown button */}
                       <button
                         onClick={() => setOpenDropdown(openDropdown === ingredient.id ? null : ingredient.id)}
-                        className="game-button bg-amber-600 hover:bg-amber-500 p-2 rounded-lg border-2 border-amber-400"
+                        className="game-button badge-icon-button rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        style={{
+                          background: `radial-gradient(circle at 35% 25%, #FFC53D, #E6A700)`,
+                          borderRadius: '12px',
+                          boxShadow: `
+                            0 0 0 2px #8B4513,
+                            inset 0 -3px 5px rgba(0, 0, 0, 0.3)
+                          `
+                        }}
                       >
                         {openDropdown === ingredient.id ? (
                           <ChevronUp className="h-5 w-5" />
@@ -356,7 +371,15 @@ export default function Home() {
                       {/* Delete button */}
                       <button
                         onClick={() => removeIngredient(ingredient.id)}
-                        className="game-button bg-red-600 hover:bg-red-500 p-2 rounded-lg border-2 border-red-400"
+                        className="game-button badge-icon-button rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        style={{
+                          background: `radial-gradient(circle at 35% 25%, #FF5252, #D32F2F)`,
+                          borderRadius: '12px',
+                          boxShadow: `
+                            0 0 0 2px #a80b0b,
+                            inset 0 -3px 5px rgba(0, 0, 0, 0.3)
+                          `
+                        }}
                       >
                         <Trash2 className="h-5 w-5" />
                       </button>
@@ -403,9 +426,9 @@ export default function Home() {
 
           {/* Players Section */}
           <div className="bg-gradient-to-b from-amber-800 to-amber-900 rounded-3xl p-6 border-4 border-yellow-600 shadow-xl">
-            <h2 className="game-text text-3xl mb-6 font-bold text-center">Players</h2>
+            <h2 className="game-text text-inset-shadow text-3xl mb-6 font-semibold text-center">Players</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
               {players.map((player) => (
                 <div
                   key={player.id}
@@ -439,15 +462,24 @@ export default function Home() {
                             e.stopPropagation()
                             setOpenPlayerIconDropdown(openPlayerIconDropdown === player.id ? null : player.id)
                           }}
-                          className="game-button bg-amber-600 hover:bg-amber-500 p-2 rounded-lg border-2 border-amber-400 min-w-[40px] text-center text-xl"
+                          className="game-button badge-icon-button rounded-lg text-center text-xl relative p-3 w-[32px] h-[32px] flex items-center justify-center bg-stone-50"
+                          style={{
+                            background: `white`,
+                            // background: `radial-gradient(circle at 35% 25%, #FFC53D, #E6A700)`,
+                            borderRadius: '12px 12px 12px 12px',
+                            boxShadow: `
+                              0 0 0 2px #8B4513,
+                              inset 0 -3px 5px rgba(0, 0, 0, 0.3)
+                            `
+                          }}
                         >
                           {player.icon || <Smile className="h-5 w-5 inline-block" />}
                         </button>
 
-                        <h3 className="game-text text-xl font-bold">{player.name}</h3>
+                        <h3 className="game-text text-xl font-medium">{player.name}</h3>
                       </div>
 
-                      <div className="bg-amber-950/70 px-3 py-1 rounded-full text-sm border border-amber-600">
+                      <div className="px-3 py-1 rounded-full text-sm text-amber-300">
                         {getPlayerItemsCount(player.id)} items
                       </div>
                     </div>
@@ -492,7 +524,7 @@ export default function Home() {
                       ))}
 
                     {getPlayerItemsCount(player.id) === 0 && (
-                      <div className="text-center py-2 text-amber-300/70 text-sm italic">No items assigned yet</div>
+                      <div className="text-center py-2 text-amber-300/80 text-sm">Dirty freeloader</div>
                     )}
                   </div>
                 </div>
