@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { ChevronDown, ChevronUp, Plus, Trash2, Smile, Play, Pause, AlertTriangle, Volume2, VolumeX } from "lucide-react"
+import { motion } from "framer-motion"
 import { TacoBackground } from "@/components/taco-background"
 import { LuCopy, LuShare2, LuCheck, LuPlus, LuTrash2, LuUser, LuSave, LuX } from 'react-icons/lu';
 import { FaTrashAlt } from 'react-icons/fa';
@@ -153,6 +154,21 @@ function decodeBase64ToState(encodedState: string): any {
     return { ingredients: [], players: [] };
   }
 }
+
+// Animation variants for main containers
+const containerVariants = {
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+  chaos: {
+    opacity: 0,
+    y: "100vh", // Fall down off the screen
+    rotate: 5, // Slight rotation for effect
+    transition: { duration: 0.8, ease: "easeIn" },
+  },
+};
 
 export default function Home() {
   // Start with default values for SSR
@@ -478,7 +494,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen relative">
+    <main className="min-h-screen relative overflow-hidden">
       <TacoBackground isChaosMode={isChaosMode} />
 
       {/* Notification component */}
@@ -546,304 +562,316 @@ export default function Home() {
 
       <div className="container mx-auto px-4 py-2">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Ingredients Section */}
-          <div className="bg-gradient-to-b from-amber-800 to-amber-900 rounded-3xl p-6 border-4 border-yellow-600 shadow-xl">
-            <h2 className="game-text text-inset-shadow text-3xl mb-6 text-center font-semibold">Ingredients</h2>
-            <div className="mb-6 flex gap-2">
-              <input
-                type="text"
-                value={newIngredient}
-                onChange={(e) => setNewIngredient(e.target.value)}
-                placeholder="New ingredient..."
-                className="flex-1 p-3 rounded-xl bg-gradient-to-b from-stone-300 to-stone-50 border-yellow-600 border-2 border-yellow-600 text-stone-900 placeholder-stone-900/50 font-semibold"
-              />
-              <input
-                type="text"
-                value={newQuantity}
-                onChange={(e) => setNewQuantity(e.target.value)}
-                placeholder="Qty & unit"
-                className="w-28 p-3 rounded-xl bg-gradient-to-b from-stone-300 to-stone-50 border-yellow-600 border-2 border-yellow-600 text-stone-900 placeholder-stone-900/50 font-semibold"
-              />
-              <button
-                onClick={addIngredient}
-                className="game-button bg-green-600 hover:bg-green-500 p-3 rounded-xl border-2 border-green-600 text-green-900"
-                style={{
-                  background: `radial-gradient(circle at 35% 25%, #00C950, #00C950)`,
-                  borderRadius: '12px',
-                  boxShadow: `
-                    inset 0 -3px 5px rgba(0, 0, 0, 0.3)
-                  `
-                }}
-              >
-                <Plus className="h-6 w-6" />
-              </button>
-            </div>
-
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto overflow-x-visible pr-2 custom-scrollbar">
-              {ingredients.map((ingredient) => (
-                <div
-                  key={ingredient.id}
-                  className="relative bg-gradient-to-b from-amber-100 to-amber-300 rounded-xl p-4 border-2 border-yellow-600 shadow-md group"
-                >
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      {/* Icon button */}
-                      <div className="relative">
-                        <button
-                          onClick={() => {
-                            setOpenIconDropdown(openIconDropdown === ingredient.id ? null : ingredient.id)
-                          }}
-                          className="game-button badge-icon-button rounded-lg text-center text-xl relative p-3 w-[32px] h-[32px] flex items-center justify-center bg-amber-300"
-                          style={{
-                            background: `white`,
-                            borderRadius: '12px 12px 12px 12px',
-                            boxShadow: `
-                              0 0 0 2px #8B4513,
-                              inset 0 -3px 5px rgba(0, 0, 0, 0.3)
-                            `
-                          }}
-                        >
-                          {renderIngredientIcon(ingredient)}
-                        </button>
-
-                        {/* Emoji icon dropdown menu */}
-                        {openIconDropdown === ingredient.id && (
-                          <div className="absolute z-50 mt-2 w-64 left-0 bg-gradient-to-b from-amber-50 to-amber-100 rounded-xl border-2 border-yellow-600 shadow-xl">
-                            <div className="p-2">
-                              <div className="flex justify-between items-center mb-2 border-b border-amber-700 pb-2">
-                                <button
-                                  onClick={() => setOpenIconDropdown(null)}
-                                  className="text-md text-amber-950 hover:text-amber-100"
-                                >
-                                  Close
-                                </button>
-                                <button
-                                  onClick={() => setIngredientIcon(ingredient.id, "")}
-                                  className="p-1 hover:bg-amber-800 rounded-lg text-center"
-                                >
-                                  ❌
-                                </button>
-                              </div>
-                              <div className="grid grid-cols-5 gap-2">
-                                {foodIcons.map((icon) => (
-                                  <button
-                                    key={icon.id}
-                                    onClick={() => setIngredientIcon(ingredient.id, icon.id)}
-                                    className="p-2 hover:bg-amber-800 rounded-lg text-center text-2xl"
-                                    title={icon.name}
-                                  >
-                                    {icon.id}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <span className="game-text font-medium">{ingredient.name}</span>
-                      <span className="text-stone-700 font-semibold text-sm">({ingredient.quantity})</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {/* Assigned player badge */}
-                      {ingredient.assigned && (
-                        <div
-                          className="px-3 py-1 rounded-full text-sm flex items-center gap-1 text-white"
-                          style={{
-                            backgroundColor:
-                              players.find((p) => p.id.toString() === ingredient.assigned)?.color || "#888",
-                            boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
-                          }}
-                        >
-                          <span>{players.find((p) => p.id.toString() === ingredient.assigned)?.icon}</span>
-                          <span>{players.find((p) => p.id.toString() === ingredient.assigned)?.name}</span>
-                        </div>
-                      )}
-
-                      {/* Dropdown button */}
-                      <button
-                        onClick={() => setOpenDropdown(openDropdown === ingredient.id ? null : ingredient.id)}
-                        className="game-button badge-icon-button text-amber-900 rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                        style={{
-                          background: `radial-gradient(circle at 35% 25%, #FFC53D, #E6A700)`,
-                          borderRadius: '12px',
-                          boxShadow: `
-                            0 0 0 2px #8B4513,
-                            inset 0 -3px 5px rgba(0, 0, 0, 0.3)
-                          `
-                        }}
-                      >
-                        {openDropdown === ingredient.id ? (
-                          <ChevronUp className="h-5 w-5" />
-                        ) : (
-                          <ChevronDown className="h-5 w-5" />
-                        )}
-                      </button>
-
-                      {/* Delete button */}
-                      <button
-                        onClick={() => removeIngredient(ingredient.id)}
-                        className="game-button text-white badge-icon-button rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                        style={{
-                          background: `radial-gradient(circle at 35% 25%, #FF5252, #D32F2F)`,
-                          borderRadius: '12px',
-                          boxShadow: `
-                            0 0 0 2px #a80b0b,
-                            inset 0 -3px 5px rgba(0, 0, 0, 0.3)
-                          `
-                        }}
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Player dropdown menu */}
-                  {openDropdown === ingredient.id && (
-                    <div className="absolute z-50 mt-2 w-48 right-0 bg-gradient-to-b from-amber-50 to-amber-100 rounded-xl border-2 border-yellow-600 shadow-xl">
-                      <div className="py-1">
-                        <button
-                          onClick={() => assignIngredient(ingredient.id, "")}
-                          className="block w-full text-left px-4 py-2 hover:bg-amber-800"
-                        >
-                          Unassign
-                        </button>
-                        {players.map((player) => (
-                          <button
-                            key={player.id}
-                            onClick={() => assignIngredient(ingredient.id, player.id.toString())}
-                            className="block w-full text-left px-4 py-2 hover:bg-amber-800 flex items-center gap-2"
-                          >
-                            <span
-                              className="inline-block w-3 h-3 rounded-full"
-                              style={{ backgroundColor: player.color }}
-                            ></span>
-                            <span>{player.icon}</span>
-                            <span>{player.name}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {ingredients.length === 0 && (
-                <div className="text-center py-8 text-amber-300">
-                  <p className="game-text">Add some ingredients to get started!</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Players Section */}
-          <div className="bg-gradient-to-b from-amber-800 to-amber-900 rounded-3xl p-6 border-4 border-yellow-600 shadow-xl">
-            <h2 className="game-text text-inset-shadow text-3xl mb-6 font-semibold text-center">Players</h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto overflow-x-visible pr-2 custom-scrollbar">
-              {players.map((player) => (
-                <div
-                  key={player.id}
-                  className="relative rounded-xl p-4 border-2 shadow-lg"
+          {/* Ingredients Section - Wrapped in motion.div */}
+          <motion.div
+            variants={containerVariants}
+            initial="visible"
+            animate={isChaosMode ? "chaos" : "visible"}
+          >
+            <div className="bg-gradient-to-b from-amber-800 to-amber-900 rounded-3xl p-6 border-4 border-yellow-600 shadow-xl h-full">
+              <h2 className="game-text text-inset-shadow text-3xl mb-6 text-center font-semibold">Ingredients</h2>
+              <div className="mb-6 flex gap-2">
+                <input
+                  type="text"
+                  value={newIngredient}
+                  onChange={(e) => setNewIngredient(e.target.value)}
+                  placeholder="New ingredient..."
+                  className="flex-1 p-3 rounded-xl bg-gradient-to-b from-stone-300 to-stone-50 border-yellow-600 border-2 border-yellow-600 text-stone-900 placeholder-stone-900/50 font-semibold"
+                />
+                <input
+                  type="text"
+                  value={newQuantity}
+                  onChange={(e) => setNewQuantity(e.target.value)}
+                  placeholder="Qty & unit"
+                  className="w-28 p-3 rounded-xl bg-gradient-to-b from-stone-300 to-stone-50 border-yellow-600 border-2 border-yellow-600 text-stone-900 placeholder-stone-900/50 font-semibold"
+                />
+                <button
+                  onClick={addIngredient}
+                  className="game-button bg-green-600 hover:bg-green-500 p-3 rounded-xl border-2 border-green-600 text-green-900"
                   style={{
-                    borderColor: player.color,
-                    background: `linear-gradient(to bottom, ${player.color}33, ${player.color}66)`,
+                    background: `radial-gradient(circle at 35% 25%, #00C950, #00C950)`,
+                    borderRadius: '12px',
+                    boxShadow: `
+                      inset 0 -3px 5px rgba(0, 0, 0, 0.3)
+                    `
                   }}
                 >
-                  {editingPlayer === player.id ? (
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={editPlayerName}
-                        onChange={(e) => setEditPlayerName(e.target.value)}
-                        className="flex-1 p-2 rounded-lg bg-amber-950/50 border-2 border-amber-600"
-                        autoFocus
-                        onBlur={() => savePlayerName(player.id)}
-                        onKeyDown={(e) => e.key === "Enter" && savePlayerName(player.id)}
-                      />
-                    </div>
-                  ) : (
+                  <Plus className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto overflow-x-visible pr-2 custom-scrollbar">
+                {ingredients.map((ingredient) => (
+                  <div
+                    key={ingredient.id}
+                    className="relative bg-gradient-to-b from-amber-100 to-amber-300 rounded-xl p-4 border-2 border-yellow-600 shadow-md group"
+                  >
                     <div className="flex justify-between items-center">
-                      <div
-                        className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => startEditPlayer(player.id, player.name)}
-                      >
-                        {/* Player icon button */}
+                      <div className="flex items-center gap-2">
+                        {/* Icon button */}
+                        <div className="relative">
+                          <button
+                            onClick={() => {
+                              setOpenIconDropdown(openIconDropdown === ingredient.id ? null : ingredient.id)
+                            }}
+                            className="game-button badge-icon-button rounded-lg text-center text-xl relative p-3 w-[32px] h-[32px] flex items-center justify-center bg-amber-300"
+                            style={{
+                              background: `white`,
+                              borderRadius: '12px 12px 12px 12px',
+                              boxShadow: `
+                                0 0 0 2px #8B4513,
+                                inset 0 -3px 5px rgba(0, 0, 0, 0.3)
+                              `
+                            }}
+                          >
+                            {renderIngredientIcon(ingredient)}
+                          </button>
+
+                          {/* Emoji icon dropdown menu */}
+                          {openIconDropdown === ingredient.id && (
+                            <div className="absolute z-50 mt-2 w-64 left-0 bg-gradient-to-b from-amber-50 to-amber-100 rounded-xl border-2 border-yellow-600 shadow-xl">
+                              <div className="p-2">
+                                <div className="flex justify-between items-center mb-2 border-b border-amber-700 pb-2">
+                                  <button
+                                    onClick={() => setOpenIconDropdown(null)}
+                                    className="text-md text-amber-950 hover:text-amber-100"
+                                  >
+                                    Close
+                                  </button>
+                                  <button
+                                    onClick={() => setIngredientIcon(ingredient.id, "")}
+                                    className="p-1 hover:bg-amber-800 rounded-lg text-center"
+                                  >
+                                    ❌
+                                  </button>
+                                </div>
+                                <div className="grid grid-cols-5 gap-2">
+                                  {foodIcons.map((icon) => (
+                                    <button
+                                      key={icon.id}
+                                      onClick={() => setIngredientIcon(ingredient.id, icon.id)}
+                                      className="p-2 hover:bg-amber-800 rounded-lg text-center text-2xl"
+                                      title={icon.name}
+                                    >
+                                      {icon.id}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <span className="game-text font-medium">{ingredient.name}</span>
+                        <span className="text-stone-700 font-semibold text-sm">({ingredient.quantity})</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {/* Assigned player badge */}
+                        {ingredient.assigned && (
+                          <div
+                            className="px-3 py-1 rounded-full text-sm flex items-center gap-1 text-white"
+                            style={{
+                              backgroundColor:
+                                players.find((p) => p.id.toString() === ingredient.assigned)?.color || "#888",
+                              boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+                            }}
+                          >
+                            <span>{players.find((p) => p.id.toString() === ingredient.assigned)?.icon}</span>
+                            <span>{players.find((p) => p.id.toString() === ingredient.assigned)?.name}</span>
+                          </div>
+                        )}
+
+                        {/* Dropdown button */}
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setOpenPlayerIconDropdown(openPlayerIconDropdown === player.id ? null : player.id)
-                          }}
-                          className="game-button badge-icon-button rounded-lg text-center text-xl relative p-3 w-[32px] h-[32px] flex items-center justify-center bg-stone-50"
+                          onClick={() => setOpenDropdown(openDropdown === ingredient.id ? null : ingredient.id)}
+                          className="game-button badge-icon-button text-amber-900 rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                           style={{
-                            background: `white`,
-                            // background: `radial-gradient(circle at 35% 25%, #FFC53D, #E6A700)`,
-                            borderRadius: '12px 12px 12px 12px',
+                            background: `radial-gradient(circle at 35% 25%, #FFC53D, #E6A700)`,
+                            borderRadius: '12px',
                             boxShadow: `
                               0 0 0 2px #8B4513,
                               inset 0 -3px 5px rgba(0, 0, 0, 0.3)
                             `
                           }}
                         >
-                          {player.icon || <Smile className="h-5 w-5 inline-block" />}
+                          {openDropdown === ingredient.id ? (
+                            <ChevronUp className="h-5 w-5" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5" />
+                          )}
                         </button>
 
-                        <h3 className="game-text text-xl font-medium">{player.name}</h3>
-                      </div>
-
-                      <div className="px-3 py-1 rounded-full text-sm text-amber-300">
-                        {getPlayerItemsCount(player.id)} items
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Player icon dropdown */}
-                  {openPlayerIconDropdown === player.id && (
-                    <div className="absolute z-50 mt-2 w-64 left-0 bg-gradient-to-b from-amber-50 to-amber-100 rounded-xl border-2 border-yellow-600 shadow-xl">
-                      <div className="p-2 grid grid-cols-5 gap-2">
+                        {/* Delete button */}
                         <button
-                          onClick={() => setPlayerIcon(player.id, "")}
-                          className="p-2 hover:bg-amber-800 rounded-lg text-center"
+                          onClick={() => removeIngredient(ingredient.id)}
+                          className="game-button text-white badge-icon-button rounded-lg text-center relative p-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                          style={{
+                            background: `radial-gradient(circle at 35% 25%, #FF5252, #D32F2F)`,
+                            borderRadius: '12px',
+                            boxShadow: `
+                              0 0 0 2px #a80b0b,
+                              inset 0 -3px 5px rgba(0, 0, 0, 0.3)
+                            `
+                          }}
                         >
-                          ❌
+                          <Trash2 className="h-5 w-5" />
                         </button>
-                        {playerIcons.map((icon) => (
-                          <button
-                            key={icon.id}
-                            onClick={() => setPlayerIcon(player.id, icon.id)}
-                            className="p-2 hover:bg-amber-800 rounded-lg text-center text-2xl"
-                            title={icon.name}
-                          >
-                            {icon.id}
-                          </button>
-                        ))}
                       </div>
                     </div>
-                  )}
 
-                  <div className="mt-3 space-y-1">
-                    {ingredients
-                      .filter((i) => i.assigned === player.id.toString())
-                      .map((i) => (
-                        <div
-                          key={i.id}
-                          className="bg-amber-950/40 rounded-lg px-3 py-2 text-sm flex items-center gap-2"
-                        >
-                          <div className="flex-shrink-0">{renderIngredientIcon(i)}</div>
-                          <span>{i.name}</span>
-                          <span className="text-amber-300">({i.quantity})</span>
+                    {/* Player dropdown menu */}
+                    {openDropdown === ingredient.id && (
+                      <div className="absolute z-50 mt-2 w-48 right-0 bg-gradient-to-b from-amber-50 to-amber-100 rounded-xl border-2 border-yellow-600 shadow-xl">
+                        <div className="py-1">
+                          <button
+                            onClick={() => assignIngredient(ingredient.id, "")}
+                            className="block w-full text-left px-4 py-2 hover:bg-amber-800"
+                          >
+                            Unassign
+                          </button>
+                          {players.map((player) => (
+                            <button
+                              key={player.id}
+                              onClick={() => assignIngredient(ingredient.id, player.id.toString())}
+                              className="block w-full text-left px-4 py-2 hover:bg-amber-800 flex items-center gap-2"
+                            >
+                              <span
+                                className="inline-block w-3 h-3 rounded-full"
+                                style={{ backgroundColor: player.color }}
+                              ></span>
+                              <span>{player.icon}</span>
+                              <span>{player.name}</span>
+                            </button>
+                          ))}
                         </div>
-                      ))}
-
-                    {getPlayerItemsCount(player.id) === 0 && (
-                      <div className="text-center py-2 text-amber-300/80 text-sm">Dirty freeloader</div>
+                      </div>
                     )}
                   </div>
-                </div>
-              ))}
+                ))}
+
+                {ingredients.length === 0 && (
+                  <div className="text-center py-8 text-amber-300">
+                    <p className="game-text">Add some ingredients to get started!</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          </motion.div>
+
+          {/* Players Section - Wrapped in motion.div */}
+          <motion.div
+            variants={containerVariants}
+            initial="visible"
+            animate={isChaosMode ? "chaos" : "visible"}
+          >
+            <div className="bg-gradient-to-b from-amber-800 to-amber-900 rounded-3xl p-6 border-4 border-yellow-600 shadow-xl h-full">
+              <h2 className="game-text text-inset-shadow text-3xl mb-6 font-semibold text-center">Players</h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto overflow-x-visible pr-2 custom-scrollbar">
+                {players.map((player) => (
+                  <div
+                    key={player.id}
+                    className="relative rounded-xl p-4 border-2 shadow-lg"
+                    style={{
+                      borderColor: player.color,
+                      background: `linear-gradient(to bottom, ${player.color}33, ${player.color}66)`,
+                    }}
+                  >
+                    {editingPlayer === player.id ? (
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={editPlayerName}
+                          onChange={(e) => setEditPlayerName(e.target.value)}
+                          className="flex-1 p-2 rounded-lg bg-amber-950/50 border-2 border-amber-600"
+                          autoFocus
+                          onBlur={() => savePlayerName(player.id)}
+                          onKeyDown={(e) => e.key === "Enter" && savePlayerName(player.id)}
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex justify-between items-center">
+                        <div
+                          className="flex items-center gap-2 cursor-pointer"
+                          onClick={() => startEditPlayer(player.id, player.name)}
+                        >
+                          {/* Player icon button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setOpenPlayerIconDropdown(openPlayerIconDropdown === player.id ? null : player.id)
+                            }}
+                            className="game-button badge-icon-button rounded-lg text-center text-xl relative p-3 w-[32px] h-[32px] flex items-center justify-center bg-stone-50"
+                            style={{
+                              background: `white`,
+                              // background: `radial-gradient(circle at 35% 25%, #FFC53D, #E6A700)`,
+                              borderRadius: '12px 12px 12px 12px',
+                              boxShadow: `
+                                0 0 0 2px #8B4513,
+                                inset 0 -3px 5px rgba(0, 0, 0, 0.3)
+                              `
+                            }}
+                          >
+                            {player.icon || <Smile className="h-5 w-5 inline-block" />}
+                          </button>
+
+                          <h3 className="game-text text-xl font-medium">{player.name}</h3>
+                        </div>
+
+                        <div className="px-3 py-1 rounded-full text-sm text-amber-300">
+                          {getPlayerItemsCount(player.id)} items
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Player icon dropdown */}
+                    {openPlayerIconDropdown === player.id && (
+                      <div className="absolute z-50 mt-2 w-64 left-0 bg-gradient-to-b from-amber-50 to-amber-100 rounded-xl border-2 border-yellow-600 shadow-xl">
+                        <div className="p-2 grid grid-cols-5 gap-2">
+                          <button
+                            onClick={() => setPlayerIcon(player.id, "")}
+                            className="p-2 hover:bg-amber-800 rounded-lg text-center"
+                          >
+                            ❌
+                          </button>
+                          {playerIcons.map((icon) => (
+                            <button
+                              key={icon.id}
+                              onClick={() => setPlayerIcon(player.id, icon.id)}
+                              className="p-2 hover:bg-amber-800 rounded-lg text-center text-2xl"
+                              title={icon.name}
+                            >
+                              {icon.id}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-3 space-y-1">
+                      {ingredients
+                        .filter((i) => i.assigned === player.id.toString())
+                        .map((i) => (
+                          <div
+                            key={i.id}
+                            className="bg-amber-950/40 rounded-lg px-3 py-2 text-sm flex items-center gap-2"
+                          >
+                            <div className="flex-shrink-0">{renderIngredientIcon(i)}</div>
+                            <span>{i.name}</span>
+                            <span className="text-amber-300">({i.quantity})</span>
+                          </div>
+                        ))}
+
+                      {getPlayerItemsCount(player.id) === 0 && (
+                        <div className="text-center py-2 text-amber-300/80 text-sm">Dirty freeloader</div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </main>
