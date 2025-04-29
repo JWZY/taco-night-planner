@@ -36,6 +36,12 @@ pnpm dev
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Deployment
+
+This app is automatically deployed to GitHub Pages using GitHub Actions. Every push to the `main` branch triggers a new build and deployment.
+
+Visit the live app: [https://jwzy.github.io/taco-night-planner/](https://jwzy.github.io/taco-night-planner/)
+
 ## License
 
 MIT 
