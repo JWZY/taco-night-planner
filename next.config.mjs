@@ -9,6 +9,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  output: 'export',
+  basePath: process.env.NODE_ENV === 'production' ? '/taco-night-planner' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/taco-night-planner/' : '',
+  trailingSlash: true,
 }
 
 export default nextConfig
