@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { ChevronDown, ChevronUp, Plus, Trash2, Smile, Play, Pause, AlertTriangle, Volume2, VolumeX } from "lucide-react"
+import { ChevronDown, ChevronUp, Plus, Trash2, Smile, Play, Pause, AlertTriangle } from "lucide-react"
 import { motion } from "framer-motion"
 import { TacoBackground } from "@/components/taco-background"
 import { LuCopy, LuShare2, LuCheck, LuPlus, LuTrash2, LuUser, LuSave, LuX } from 'react-icons/lu';
@@ -174,37 +174,8 @@ export default function Home() {
   // Start with default values for SSR
   const [ingredients, setIngredients] = useState<typeof defaultIngredients>(defaultIngredients)
   const [players, setPlayers] = useState<typeof defaultPlayers>(defaultPlayers)
-  
-  // Audio state and ref
-  const [isMuted, setIsMuted] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize Audio object on mount and attempt to play
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      audioRef.current = new Audio("/audio/White People Taco Night FULL SONG and Video - Lewberger.mp3");
-      audioRef.current.loop = true;
-      audioRef.current.muted = true;
-      
-      // Attempt to play - might be blocked by autoplay policies
-      audioRef.current.play().then(() => {
-        // Play started successfully
-        console.log("Audio playing automatically.");
-      }).catch(error => {
-        console.error("Audio autoplay failed:", error);
-        // Autoplay failed, likely requires user interaction.
-        // Do not show a notification here anymore.
-      });
 
-      // Cleanup function
-      return () => {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current = null;
-        }
-      };
-    }
-  }, []);
 
   // Load local storage data after component mounts on client
   useEffect(() => {
@@ -356,22 +327,7 @@ export default function Home() {
     return <Smile className="h-5 w-5 inline-block" />
   }
 
-  // Toggle Mute/Unmute
-  const toggleMute = () => {
-    if (!audioRef.current) return;
 
-    const newMutedState = !isMuted;
-    audioRef.current.muted = newMutedState;
-    setIsMuted(newMutedState);
-    
-    // If unmuting and audio isn't playing yet (due to autoplay fail), try playing now
-    if (!newMutedState && audioRef.current.paused) {
-       audioRef.current.play().catch(error => {
-         console.error("Audio play failed on unmute:", error);
-         showNotification("Audio playback failed.", "error");
-       });
-    }
-  };
 
   // Placeholder for CHAOS button functionality
   const handleChaosClick = () => {
@@ -522,13 +478,6 @@ export default function Home() {
         {/* Buttons absolutely positioned top-left of the header */}
         <div className="absolute top-6 left-4 z-10 flex items-center gap-2">
           <button
-            onClick={toggleMute}
-            className={`p-2 rounded-full text-white transition-colors ${isMuted ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
-            title={isMuted ? "Unmute Music" : "Mute Music"}
-          >
-            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </button>
-          <button
             onClick={handleChaosClick}
             className="px-3 py-1 text-sm rounded-lg text-white bg-orange-500 hover:bg-orange-600 transition-colors flex items-center gap-1"
             title="Activate CHAOS MODE"
@@ -539,7 +488,7 @@ export default function Home() {
 
         {/* Title centered within max-width container */}
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className="game-text text-inset-shadow heavy-text-shadow text-4xl md:text-6xl font-bold">White People Taco Night Planner</h1>
+          <h1 className="game-text text-inset-shadow heavy-text-shadow text-4xl md:text-6xl font-bold">Taco Night Planner</h1>
         </div>
         {/* Buttons absolutely positioned top-right of the header */}
         <div className="absolute top-6 right-4 z-10 flex items-center gap-2">
